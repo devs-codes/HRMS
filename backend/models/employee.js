@@ -15,7 +15,7 @@ const employeeSchema = new mongoose.Schema({
         required:true,
         trim:true
     },
-    dateOfJoinig:{
+    dateOfJoining:{
         type:Date,
         default:Date.now()
     },
@@ -27,10 +27,9 @@ const employeeSchema = new mongoose.Schema({
         type:String,
         trim:true
     },
-    status:{
-        type:String,
-        enum:["Active","In-active"],
-        default:"Active"
+    assignedTo:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
     }
 },{timestamps:true})
 
