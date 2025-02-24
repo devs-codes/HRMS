@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
         type:String,
         enum:["employee","hr","admin","guide"],
         default:"employee"
+    },
+    employeeId:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"Employee"
     }
 },{timestamps:true})
 

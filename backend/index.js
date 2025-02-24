@@ -4,6 +4,7 @@ const app = express()
 const port = process.env.PORT || 3000;
 const dbConnection = require("./config/db")
 const userRoutes = require('./routes/userRoutes')
+const employeeRoutes = require("./routes/employeeRoutes")
 
 dbConnection.dbConnection();
 
@@ -14,6 +15,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use('/api/user',userRoutes)
+app.use('/api/employee',employeeRoutes)
 
 app.listen(port,()=>{
     console.log(`Server is running on ${port}`)

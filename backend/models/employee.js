@@ -27,7 +27,7 @@ const employeeSchema = new mongoose.Schema({
         type:String,
         trim:true
     },
-    assignedTo:{
+    reportTo:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User"
     }

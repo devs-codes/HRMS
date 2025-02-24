@@ -57,143 +57,155 @@ exports.loginUser = async (req, res) => {
     }
 }
 
-// Admin access only
-exports.getAllUsers = async(req,res)=>{ 
+// Admin and HR access only
+exports.getAllUsers = async (req, res) => {
     try {
-     const users = await userSchema.find().select("-password -__v");
-        if(!users){
-            return res.status(404).json({
-                message:"No user found",
-                success:false
-            })
+        if (req.user.role == "admin") {
+            const user = await userSchema.find({ _id: { $ne: req.user._id } }).select("-password -__v");
+            return res.status(200).json({
+                message: "Users found successfully",
+                success: true,
+                data: user
+            });
+        }
+        if (req.user.role == "hr") {
+            const users = await userSchema.find({ role: { $ne: "admin" }, _id: { $ne: req.user._id } }).select("-password -__v");
+            return res.status(200).json({
+                message: "Users found successfully",
+                success: true,
+                data: users
+            });
         }
         return res.status(200).json({
-            message:"Users found successfully",
-            success:true,
-            data:users
+            message: "Users found successfully",
+            success: true,
+            data: users
         })
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({
-            message:"Internal server Error"
+            message: "Internal server Error"
         })
     }
 }
 
 // Admin,HR and Guide access only
-exports.getUser = async(req,res)=>{
+exports.getUser = async (req, res) => {
     try {
         const user = await userSchema.findById(req.params.id);
-        if(!user){
+        if (!user) {
             return res.status(404).json({
-                message:"User not found",
-                success:false
+                message: "User not found",
+                success: false
             })
         }
         return res.status(200).json({
-            message:"User found successfully",
-            success:true,
-            data:user
+            message: "User found successfully",
+            success: true,
+            data: user
         })
     } catch (error) {
         console.log(error)
         return res.status(500).json({
-            message:"Internal server Error"
+            message: "Internal server Error"
         })
     }
 }
 
 // Get user his own profile
-exports.getProfile = async(req,res)=>{
+exports.getProfile = async (req, res) => {
     try {
         const users = await userSchema.findById(req.user._id).select("-password -__v");
-        if(!users){
+        if (!users) {
             return res.status(404).json({
-                message:"No user found",
-                success:false
+                message: "No user found",
+                success: false
             })
         }
         return res.status(200).json({
-            message:"User found successfully",
-            success:true,
-            data:users
+            message: "User found successfully",
+            success: true,
+            data: users
         })
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({
-            message:"Internal server Error"
-        })  
+            message: "Internal server Error"
+        })
     }
 }
 
 // Ask this to sir
 // Employee can update his own profile
-exports.updateUser = async(req,res)=>{
+exports.updateUser = async (req, res) => {
     try {
-        const {name,email,password} = req.body
-        const user = await userSchema.findOneAndUpdate({_id:req.user._id},{name,email,password},{new:true})
-        if(!user){
+        const { name, email, password } = req.body
+        const user = await userSchema.findOneAndUpdate({ _id: req.user._id }, { name, email, password }, { new: true })
+        if (!user) {
             return res.status(404).json({
-                message:"user not found"
+                message: "user not found"
             })
         }
         return res.status(200).json({
-            message:"user updated successfully",
-            success:true,
-            data:user
+            message: "user updated successfully",
+            success: true,
+            data: user
         })
     } catch (error) {
         console.log(error);
         return res.status(500).json({
-            message:"Internal server Error"
+            message: "Internal server Error"
         })
     }
 }
 
 // Admin access only
-exports.updateUserData = async(req,res)=>{
+exports.updateUserData = async (req, res) => {
     try {
-        const user = await userSchema.findOneAndUpdate({_id:req.params.id},req.body,{new:true})
-        if(!user){
+        //we can use query here
+        const user = await userSchema.findOneAndUpdate({ _id: req.params.id }, req.body, { new: true })
+            .select("-password -__v");
+        if (!user) {
             return res.status(404).json({
-                message:"user not found",
-                success:false
+                message: "user not found",
+                success: false
             })
         }
         return res.status(200).json({
-            message:"user updated successfully",
-            success:true,
-            data:user
+            message: "user updated successfully",
+            success: true,
+            data: user
         })
     } catch (error) {
         console.log(error.message)
         return res.status(500).json({
-            message:"Internal server Error",
-            success : false
+            message: "Internal server Error",
+            success: false
         })
     }
 }
 
-// Admin, HR, Guide access only
-exports.deleteUser = async(req,res)=>{
+// Admin, HR access only
+exports.deleteUser = async (req, res) => {
     try {
-        const user = await userSchema.findOneAndDelete({_id:req.params.id})
-        if(!user){
+        const user = await userSchema.findOneAndDelete({ _id: req.params.id })
+            .select("-password -__v");
+        if (!user) {
             return res.status(404).json({
-                message:"user not found",
-                success:false
+                message: "user not found",
+                success: false
             })
         }
         return res.status(200).json({
-            message:"user deleted successfully",
-            success:true,
-            data:user
+            message: "user deleted successfully",
+            success: true,
+            data: user
         })
     } catch (error) {
         console.log(error)
         return res.status(500).json({
-            message:"Internal server Error",
-            success : false
+            message: "Internal server Error",
+            success: false
         })
     }
 }
